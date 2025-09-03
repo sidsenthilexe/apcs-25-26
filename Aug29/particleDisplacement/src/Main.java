@@ -1,29 +1,34 @@
 public class Main {
     public static void main(String[] args) {
+        displayTable();
+    }
+
+    public static void displayTable() {
         for (int i = 1; i <= 50; i++) {
-            double avgOfSims = runMultipleSims(i, 10000);
-            System.out.println(i + " random steps have average displacement " + avgOfSims);
+            double answer = calcAverage(i);
+            System.out.println(i + " random steps have average displacement " + answer);
         }
     }
 
-    public static double simulation(double numSteps) { // how far did it go this simulation
+    public static double calcAverage(int numSteps) {
+        double sum = 0.0;
+        for (int i = 0; i < 10000; i++) {
+            sum += doExperiment(numSteps);
+        }
+        return (sum/10000);
+    }
+
+    public static double doExperiment(int numSteps) {
         int x = 0;
         int y = 0;
+
         for (int i = 0; i < numSteps; i++) {
-            int step = (int)(Math.random() * 4);
-            if (step == 0) y++;
-            else if (step == 1) x++;
-            else if (step == 2) y--;
-            else if (step == 3) x --;
+            int moveDirection = (int)(Math.random()*3);
+            if (moveDirection == 0) y++;
+            else if (moveDirection == 1) x++;
+            else if (moveDirection == 2) y--;
+            else if (moveDirection == 3) x--;
         }
         return Math.hypot(x,y);
-    }
-
-    public static double runMultipleSims(double numStepsToSimulate, double runSimTimes) { // how far did it go on average
-        double sumDistance = 0;
-        for (int i = 0; i < runSimTimes; i++) {
-            sumDistance += simulation(numStepsToSimulate);
-        }
-        return sumDistance/runSimTimes; // return average (add all the simulations, divide by number of sims)
     }
 }
