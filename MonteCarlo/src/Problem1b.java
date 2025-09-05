@@ -4,10 +4,10 @@ public class Problem1b {
     }
 
     public static void displayTable() {
-        System.out.println("Goal:\tAvg Bets:");
+        System.out.println("Goal:\tProbability of Win:");
         for (int i = 55; i <= 245; i+=5) {
             double avgBets = findWinProbability(10000, 50, i);
-            System.out.println("$" + i + " " + avgBets);
+            System.out.println("$" + i + " \t" + avgBets);
         }
     }
 
