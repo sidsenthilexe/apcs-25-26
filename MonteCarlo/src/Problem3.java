@@ -6,7 +6,9 @@ Number of steps per second ~ 7,350,000,000
 Equation - f(x) = 60.4*sqrt(x)
 Average distance a particle diffuses in 1 second:
 ~ 5,200,000 nm
+~ 0.52 cm
 */
+
 
 public class Problem3 {
     public static void main(String[] args) {
