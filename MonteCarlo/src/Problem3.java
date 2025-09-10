@@ -16,7 +16,7 @@ public class Problem3 {
     }
 
     public static void displayTable() {
-        for (int i = 1; i <= 200; i++) {
+        for (int i = 0; i <= 400; i++) {
             double avg = avgSimulations(i, 68, 10000);
             double roundedAvg = Math.round(avg * Math.pow(10, 2))/ Math.pow(10,2);
             System.out.println("(" + i + ", " + roundedAvg + ")");
