@@ -1,4 +1,4 @@
-public class Problem13 {
+public class UnsafeSquares {
     public static void main(String[] args) {
 
     }
