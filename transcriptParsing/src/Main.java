@@ -80,7 +80,7 @@ public class Main {
 
         System.out.println("Total session time:  " + secondsFormatted(meetingTime));
         System.out.println("Total speaking time: " + secondsFormatted(totalTimeSpeaking));
-        System.out.println("Speaker switches:    " + speakerSwitches);
+        System.out.println("Speaker switches:    " + speakerSwitches + "\n");
 
         for(Person p : people){
             ArrayList<Double> speakingTimes = p.getSpeakLengths();
@@ -90,7 +90,7 @@ public class Main {
             }
             double speakingPercentage = (thisPersonSpeaking/totalTimeSpeaking) * 100;
 
-            System.out.println(p.getName() + ":\n   " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%");
+            System.out.println(p.getName() + ":\n   " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%\n");
         }
 
     }
