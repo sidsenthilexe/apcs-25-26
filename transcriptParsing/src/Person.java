@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 
 public class Person {
-    private static String name;
-    private static ArrayList<Double> speakLengths;
+    private final String name;
+    private final ArrayList<Double> speakLengths;
 
     public Person(String n) {
         name = n;
@@ -18,4 +18,6 @@ public class Person {
     public ArrayList<Double> getSpeakLengths () {
         return speakLengths;
     }
+
+    public String toString() { return name; }
 }

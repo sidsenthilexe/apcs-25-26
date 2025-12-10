@@ -6,9 +6,10 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<String> file = readFile("src/short-test-transcript.vtt");
+        ArrayList<String> file = readFile("src/ChitChat01.vtt");
 
         double speakingTime = 0;
+        int speakerSwitches = 0;
 
         ArrayList<String> times = new ArrayList<>();
         ArrayList<String> text = new ArrayList<>();
@@ -34,11 +35,12 @@ public class Main {
             double end = getSeconds(endTime);
 
             String name = currText.substring(0, currText.indexOf(":"));
-            System.out.println(name);
             String message = currText.substring(currText.indexOf(":")+2);
 
             boolean inList = false;
             int thisPersonIndex = 0;
+
+            if(!getNameFromText(text.get(Math.max(0,i-1))).equals(name)) speakerSwitches++;
 
             for (int j = 0; j < people.size(); j++) {
                 if (people.get(j).getName().equals(name)) {
@@ -48,26 +50,40 @@ public class Main {
                 }
             }
 
-
-
             if (!inList) {
-                people.add(new Person(name));
+                Person newPerson = new Person(name);
+                people.add(newPerson);
                 thisPersonIndex = people.size()-1;
             }
 
             Person currPerson = people.get(thisPersonIndex);
             currPerson.addSpeak(end-start);
-
-
-
-        }
-
-        for (int i = 0; i < people.size(); i++) {
-            System.out.println(people.get(i).getName());
         }
 
 
+        double totalTimeSpeaking = 0;
+        for(Person p : people){
+            ArrayList<Double> speakingTimes = p.getSpeakLengths();
+            double thisPersonSpeaking = 0;
+            for(Double d : speakingTimes){
+                thisPersonSpeaking += d;
+            }
 
+            totalTimeSpeaking += thisPersonSpeaking;
+        }
+        System.out.println("Total speaking time: " + secondsFormatted(totalTimeSpeaking));
+        System.out.println("Speaker switches: " + speakerSwitches);
+
+        for(Person p : people){
+            ArrayList<Double> speakingTimes = p.getSpeakLengths();
+            double thisPersonSpeaking = 0;
+            for(Double d : speakingTimes){
+                thisPersonSpeaking += d;
+            }
+            double speakingPercentage = (thisPersonSpeaking/totalTimeSpeaking) * 100;
+
+            System.out.println(p.getName() + ": " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%");
+        }
 
     }
 
@@ -80,6 +96,23 @@ public class Main {
         s += 3600*h;
 
         return s;
+    }
+
+    public static String secondsFormatted(double seconds) {
+        int h = (int) (seconds / 3600);
+        seconds = seconds % 3600;
+        int m = (int) (seconds / 60);
+        seconds = seconds % 60;
+        int s = (int) seconds;
+        return h + "H:" + m + "M:" + s + "S";
+    }
+
+    public static double roundDouble(double old) {
+        return (double) Math.round(old * 100) / 100;
+    }
+
+    public static String getNameFromText(String text) {
+        return text.substring(0, text.indexOf(":"));
     }
 
 
