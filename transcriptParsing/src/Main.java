@@ -6,9 +6,10 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<String> file = readFile("src/ChitChat01.vtt");
+        ArrayList<String> file = readFile("src/short-test-transcript.vtt");
 
         double speakingTime = 0;
+        double meetingTime = 0;
         int speakerSwitches = 0;
 
         ArrayList<String> times = new ArrayList<>();
@@ -28,11 +29,16 @@ public class Main {
             String currTime = times.get(i);
             String currText = text.get(i);
 
+
             String startTime = currTime.substring(0, currTime.indexOf(" "));
             String endTime = currTime.substring(currTime.indexOf(">")+2);
 
+
             double start = getSeconds(startTime);
             double end = getSeconds(endTime);
+            if (i == times.size()-1) {
+                meetingTime = end;
+            }
 
             String name = currText.substring(0, currText.indexOf(":"));
             String message = currText.substring(currText.indexOf(":")+2);
@@ -71,8 +77,10 @@ public class Main {
 
             totalTimeSpeaking += thisPersonSpeaking;
         }
+
+        System.out.println("Total session time:  " + secondsFormatted(meetingTime));
         System.out.println("Total speaking time: " + secondsFormatted(totalTimeSpeaking));
-        System.out.println("Speaker switches: " + speakerSwitches);
+        System.out.println("Speaker switches:    " + speakerSwitches);
 
         for(Person p : people){
             ArrayList<Double> speakingTimes = p.getSpeakLengths();
@@ -82,7 +90,7 @@ public class Main {
             }
             double speakingPercentage = (thisPersonSpeaking/totalTimeSpeaking) * 100;
 
-            System.out.println(p.getName() + ": " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%");
+            System.out.println(p.getName() + ":\n   " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%");
         }
 
     }
