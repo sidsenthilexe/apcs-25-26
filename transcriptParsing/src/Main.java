@@ -1,96 +1,141 @@
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.PrintWriter;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<String> file = readFile("src/short-test-transcript.vtt");
 
-        double speakingTime = 0;
-        double meetingTime = 0;
-        int speakerSwitches = 0;
+        // get all .vtt files from the inputs folder
+        Path dirPath = Paths.get("inputs/");
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath, "*.vtt")) {
 
-        ArrayList<String> times = new ArrayList<>();
-        ArrayList<String> text = new ArrayList<>();
-
-        ArrayList<Person> people = new ArrayList<>();
-
-        for (int i = 3; i < file.size(); i+=4) {
-            times.add(file.get(i));
-        }
-
-        for (int i = 4; i < file.size(); i+=4) {
-            text.add(file.get(i));
-        }
-
-        for (int i = 0; i < times.size(); i++) {
-            String currTime = times.get(i);
-            String currText = text.get(i);
+            for (Path filePath : stream) {
 
 
-            String startTime = currTime.substring(0, currTime.indexOf(" "));
-            String endTime = currTime.substring(currTime.indexOf(">")+2);
+                // get the current file and read it
+                String fileString = filePath.toString();
+                String fileName = fileString.substring(fileString.indexOf("\\") + 1, fileString.indexOf("."));
 
+                ArrayList<String> file = readFile(fileString);
 
-            double start = getSeconds(startTime);
-            double end = getSeconds(endTime);
-            if (i == times.size()-1) {
-                meetingTime = end;
-            }
+                // initialize the out string (contains all output data)
+                String out = "";
+                out += fileString + "\n\n";
 
-            String name = currText.substring(0, currText.indexOf(":"));
-            String message = currText.substring(currText.indexOf(":")+2);
+                double speakingTime = 0;
+                double meetingTime = 0;
+                int speakerSwitches = 0;
 
-            boolean inList = false;
-            int thisPersonIndex = 0;
+                // Split the transcript into lines containing time intervals and lines containing text
+                ArrayList<String> times = new ArrayList<>();
+                ArrayList<String> text = new ArrayList<>();
 
-            if(!getNameFromText(text.get(Math.max(0,i-1))).equals(name)) speakerSwitches++;
+                ArrayList<Person> people = new ArrayList<>();
 
-            for (int j = 0; j < people.size(); j++) {
-                if (people.get(j).getName().equals(name)) {
-                    inList = true;
-                    thisPersonIndex = j;
-                    break;
+                for (int i = 3; i < file.size(); i += 4) {
+                    times.add(file.get(i));
                 }
+
+                for (int i = 4; i < file.size(); i += 4) {
+                    text.add(file.get(i));
+                }
+
+                // Look at each set of time + text
+                for (int i = 0; i < times.size(); i++) {
+                    String currTime = times.get(i);
+                    String currText = text.get(i);
+
+                    // get the start and end time for this line and set the total meeting time if on the last index
+                    String startTime = currTime.substring(0, currTime.indexOf(" "));
+                    String endTime = currTime.substring(currTime.indexOf(">") + 2);
+
+
+                    double start = getSeconds(startTime);
+                    double end = getSeconds(endTime);
+                    if (i == times.size() - 1) {
+                        meetingTime = end;
+                    }
+
+                    // parse the text part to separate out the name
+                    String name = currText.substring(0, currText.indexOf(":"));
+
+                    // Check if the person in this line already exists in the People arraylist, if not create a new one
+                    boolean inList = false;
+                    int thisPersonIndex = 0;
+
+                    boolean speakerSwitched = false;
+
+                    if (!getNameFromText(text.get(Math.max(0, i - 1))).equals(name)) speakerSwitched = true;
+
+                    for (int j = 0; j < people.size(); j++) {
+                        if (people.get(j).getName().equals(name)) {
+                            inList = true;
+                            thisPersonIndex = j;
+                            break;
+                        }
+                    }
+
+                    if (!inList) {
+                        Person newPerson = new Person(name);
+                        people.add(newPerson);
+                        thisPersonIndex = people.size() - 1;
+                    }
+
+                    // get the person object to track all of the data
+                    Person currPerson = people.get(thisPersonIndex);
+                    currPerson.addSpeak(end - start);
+
+                    if (speakerSwitched) {
+                        speakerSwitches ++;
+                        currPerson.addSpeakerSwitch();
+                    }
+
+                }
+
+                // calculate total speaking time
+                double totalTimeSpeaking = 0;
+                for (Person p : people) {
+                    ArrayList<Double> speakingTimes = p.getSpeakLengths();
+                    double thisPersonSpeaking = 0;
+                    for (Double d : speakingTimes) {
+                        thisPersonSpeaking += d;
+                    }
+
+                    totalTimeSpeaking += thisPersonSpeaking;
+                }
+
+                out += "Total session time:  " + secondsFormatted(meetingTime) +
+                        "\nTotal speaking time: " + secondsFormatted(totalTimeSpeaking) +
+                        "\nSpeaker switches:    " + speakerSwitches + "\n";
+
+                // calculate stats for each person
+                for (Person p : people) {
+                    ArrayList<Double> speakingTimes = p.getSpeakLengths();
+                    double thisPersonSpeaking = 0;
+                    for (Double d : speakingTimes) {
+                        thisPersonSpeaking += d;
+                    }
+                    double speakingPercentage = (thisPersonSpeaking / totalTimeSpeaking) * 100;
+
+                    double avgSpeakingTime = thisPersonSpeaking / p.getSpeakerSwitches();
+
+                    out += "\n" + p.getName() + ":\n   " +
+                            "Total Speaking Time: " + secondsFormatted(thisPersonSpeaking) + "\n   " +
+                            "Speaking Percentage: " + roundDouble(speakingPercentage) + "%\n   "+
+                            "Avg. Time Until Switch: " + secondsFormatted(avgSpeakingTime) + "\n";
+                }
+
+                // out to console and file
+                System.out.println(out);
+                outToFile(out, fileName);
+
+                System.out.println("\n");
             }
 
-            if (!inList) {
-                Person newPerson = new Person(name);
-                people.add(newPerson);
-                thisPersonIndex = people.size()-1;
-            }
-
-            Person currPerson = people.get(thisPersonIndex);
-            currPerson.addSpeak(end-start);
-        }
-
-
-        double totalTimeSpeaking = 0;
-        for(Person p : people){
-            ArrayList<Double> speakingTimes = p.getSpeakLengths();
-            double thisPersonSpeaking = 0;
-            for(Double d : speakingTimes){
-                thisPersonSpeaking += d;
-            }
-
-            totalTimeSpeaking += thisPersonSpeaking;
-        }
-
-        System.out.println("Total session time:  " + secondsFormatted(meetingTime));
-        System.out.println("Total speaking time: " + secondsFormatted(totalTimeSpeaking));
-        System.out.println("Speaker switches:    " + speakerSwitches + "\n");
-
-        for(Person p : people){
-            ArrayList<Double> speakingTimes = p.getSpeakLengths();
-            double thisPersonSpeaking = 0;
-            for(Double d : speakingTimes){
-                thisPersonSpeaking += d;
-            }
-            double speakingPercentage = (thisPersonSpeaking/totalTimeSpeaking) * 100;
-
-            System.out.println(p.getName() + ":\n   " + secondsFormatted(thisPersonSpeaking) + ", "+roundDouble(speakingPercentage) + "%\n");
+        } catch (IOException | DirectoryIteratorException e) {
+            System.out.println("Read Files Error: " + e);
         }
 
     }
@@ -121,6 +166,14 @@ public class Main {
 
     public static String getNameFromText(String text) {
         return text.substring(0, text.indexOf(":"));
+    }
+
+    public static void outToFile(String outText, String outFileName) {
+        try (PrintWriter writer = new PrintWriter("parseOutputs/" + outFileName + ".txt")) {
+            writer.println(outText);
+        } catch (IOException e) {
+            System.out.println("Print Writer Error: " + e);
+        }
     }
 
 

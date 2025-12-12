@@ -1,0 +1,31 @@
+inputs\short-test-transcript.vtt
+
+Total session time:  0H:55M:41S
+Total speaking time: 0H:44M:18S
+Speaker switches:    29
+
+Andrew Knight:
+   Total Speaking Time: 0H:5M:57S
+   Speaking Percentage: 13.45%
+   Avg. Time Until Switch: 0H:0M:32S
+
+Paul McCartney:
+   Total Speaking Time: 0H:37M:55S
+   Speaking Percentage: 85.56%
+   Avg. Time Until Switch: 0H:3M:47S
+
+George Harrison:
+   Total Speaking Time: 0H:0M:4S
+   Speaking Percentage: 0.16%
+   Avg. Time Until Switch: 0H:0M:2S
+
+Ringo Starr:
+   Total Speaking Time: 0H:0M:1S
+   Speaking Percentage: 0.07%
+   Avg. Time Until Switch: 0H:0M:1S
+
+John Lennon:
+   Total Speaking Time: 0H:0M:19S
+   Speaking Percentage: 0.75%
+   Avg. Time Until Switch: 0H:0M:3S
+

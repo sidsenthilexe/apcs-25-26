@@ -1,0 +1,16 @@
+inputs\ChitChat01.vtt
+
+Total session time:  1H:19M:15S
+Total speaking time: 1H:7M:57S
+Speaker switches:    677
+
+David Dobervich (he/him):
+   Total Speaking Time: 0H:34M:23S
+   Speaking Percentage: 50.61%
+   Avg. Time Until Switch: 0H:0M:6S
+
+Erin B:
+   Total Speaking Time: 0H:33M:33S
+   Speaking Percentage: 49.39%
+   Avg. Time Until Switch: 0H:0M:5S
+
