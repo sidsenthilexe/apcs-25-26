@@ -20,7 +20,7 @@ public class Main {
             int[] test = tests.get(i);
             System.out.println("===== Test #" + i + "=========");
             System.out.println("Before: " + Arrays.toString(test));
-            selectionSort(test);
+            reverseInsertionSort(test);
             System.out.println("After: " + Arrays.toString(test));
             System.out.println("================================");
         }
@@ -44,6 +44,30 @@ public class Main {
 
             }
         } while (swapping);
+    }
+
+    private static void insertionSort(int[] arr) {
+        for (int index = 1; index < arr.length; index++) {
+            int currentVal = arr[index];
+            int search = index-1;
+            while (search >= 0 && currentVal < arr[search]) {
+                arr[search + 1] = arr[search];
+                search--;
+            }
+            arr[search + 1] = currentVal;
+        }
+    }
+
+    private static void reverseInsertionSort(int[] arr) {
+        for (int index = arr.length-2; index >= 0; index--) {
+            int currentVal = arr[index];
+            int search = index + 1;
+            while (search <= arr.length-1 && currentVal > arr[search]) {
+                arr[search-1] = arr[search];
+                search++;
+            }
+            arr[search-1] = currentVal;
+        }
     }
 
     private static void selectionSort(int[] arr) {
