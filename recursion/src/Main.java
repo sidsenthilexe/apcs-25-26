@@ -1,7 +1,7 @@
 public class Main {
     public static void main(String[] args) {
 
-        boolean answer = palindrome("abcba");
+        boolean answer = palindrome("qwertyuiopasdfghjklzxcvbnmmnbvcxzlkjhgfdsapoiuytrewq");
         System.out.println(answer);
     }
 
