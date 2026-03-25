@@ -6,6 +6,11 @@ public class Main {
         int[] test2 = {1, 2, 3, 4, 5, 6, 7, 8, 10, 15, 492, 1555};
         System.out.println(binarySearchRecursive(test2, 9));
 
+        for (int n = 100; n < 10000000; n*=2) {
+            int[] testArr = testArr(n);
+            System.out.println(n + " elements: " + binarySearchTester(testArr));
+        }
+
     }
 
     public static int sequentialSearch(int[] arr, int target) {
@@ -27,6 +32,17 @@ public class Main {
         return -1;
     }
 
+    public static int binarySearchTester(int[] arr) {
+        int counter = 0;
+        int left = 0, right = arr.length - 1;
+        while (left <= right) {
+            int midIndex = (left + right)/2;
+            counter ++;
+            left = midIndex + 1;
+        }
+        return counter;
+    }
+
     public static int binarySearchRecursive(int[] arr, int target) {
         return binarySearchHelper(arr, target, 0, arr.length-1);
     }
@@ -37,5 +53,15 @@ public class Main {
         if (target == arr[midIndex]) return midIndex;
         else if (target < arr[midIndex]) return binarySearchHelper(arr, target, left, midIndex-1);
         else return binarySearchHelper(arr, target, midIndex+1, right);
+    }
+
+    public static int[] testArr(int length) {
+        int[] arr = new int[length];
+        arr[0] = (int)(Math.random() * 11);
+        for (int i = 1; i < arr.length; i++) {
+            arr[i] = arr[i-1] + (int)(Math.random() * 11);
+        }
+
+        return arr;
     }
 }
